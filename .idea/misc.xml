@@ -5,6 +5,7 @@
       <map>
         <entry key="..\:/Dev/android-compose/MusicLyrics/app/src/main/res/drawable/ic_pause_filled.xml" value="0.1" />
         <entry key="..\:/Dev/android-compose/MusicLyrics/app/src/main/res/drawable/ic_play_filled.xml" value="0.1" />
+        <entry key="..\:/Dev/android-compose/MusicLyrics/app/src/main/res/layout/playback_seekbar.xml" value="0.5" />
       </map>
     </option>
   </component>

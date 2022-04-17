@@ -1,5 +1,6 @@
 package com.axelb.music_lyrics.presentation
 
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.compose.animation.core.LinearEasing
@@ -19,6 +20,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import com.axelb.music_lyrics.R
 import com.axelb.music_lyrics.core.linearGradientBackground
 import com.axelb.music_lyrics.presentation.model.LyricsTimestampData
 import com.axelb.music_lyrics.ui.theme.MyColor
@@ -70,11 +72,10 @@ fun ScrollableFullScreenLyricsScreen(
 		}
 	}
 
-	val seekBarView = SeekBar(LocalContext.current).apply {
-		layoutParams = ViewGroup.LayoutParams(
-			ViewGroup.LayoutParams.MATCH_PARENT,
-			ViewGroup.LayoutParams.WRAP_CONTENT
-		)
+	val seekBarView = (LayoutInflater.from(LocalContext.current).inflate(
+		R.layout.playback_seekbar,
+		null
+	) as SeekBar).apply {
 		setOnSeekBarChangeListener(onSeekbarChangeListener)
 		this.setPadding(20, 0, 0, 20)
 		this.max = 0
