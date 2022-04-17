@@ -5,11 +5,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.axelb.music_lyrics.core.linearGradientBackground
 import com.axelb.music_lyrics.presentation.model.LyricsTimestampData
@@ -52,7 +55,7 @@ fun BoxScope.ScrollableFullScreenLyricsComp(
   LazyColumn(
     modifier = Modifier.fillMaxSize(),
     state = lazyListState,
-    contentPadding = PaddingValues(vertical = 2.dp, horizontal = 18.dp),
+    contentPadding = PaddingValues(vertical = 2.dp, horizontal = 20.dp),
     horizontalAlignment = Alignment.Start,
   ) {
     items(
@@ -62,6 +65,16 @@ fun BoxScope.ScrollableFullScreenLyricsComp(
       RowLyricsItemComposable(
         lyrics = item.lyrics,
         isActive = playerPosition > item.timestampInMillis
+      )
+    }
+
+    item(key = -1) {
+      Text(
+        text = "Licensed and provided by Nobody",
+        fontSize = 13.sp,
+        fontWeight = FontWeight.W600,
+        color = MyColor.Black,
+        modifier = Modifier.padding(top = 120.dp, bottom = 48.dp)
       )
     }
   }
