@@ -17,13 +17,13 @@ fun RowLyricsItemComposable(
 ) {
   Text(
     text = lyrics,
-    fontSize = 18.sp,
-    fontWeight = FontWeight.W600,
+    fontSize = 20.sp,
+    fontWeight = FontWeight.W700,
     color = if (isActive) {
       MyColor.White
     } else {
       MyColor.Black
     },
-    modifier = Modifier.padding(vertical = 2.dp)
+    modifier = Modifier.padding(vertical = 1.dp)
   )
 }
