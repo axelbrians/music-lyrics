@@ -53,7 +53,7 @@ data class LyricsTimestampData(
         ),
         LyricsTimestampData(
           42194,
-          "'Cause I got what you need"
+          "Cause I got what you need"
         ),
         LyricsTimestampData(
           43695,
@@ -65,7 +65,7 @@ data class LyricsTimestampData(
         ),
         LyricsTimestampData(
           49334,
-          "'Cause you can do like you do or you can do like me"
+          "Cause you can do like you do or you can do like me"
         ),
         LyricsTimestampData(
           51769,
@@ -97,7 +97,7 @@ data class LyricsTimestampData(
         ),
         LyricsTimestampData(
           70622,
-          "'Cause I quite enjoy the life you say I'm trapped in"
+          "Cause I quite enjoy the life you say I'm trapped in"
         ),
         LyricsTimestampData(
           73725,
@@ -133,7 +133,7 @@ data class LyricsTimestampData(
         ),
         LyricsTimestampData(
           92277,
-          "'Cause I got what I need"
+          "Cause I got what I need"
         ),
         LyricsTimestampData(
           93678,
@@ -321,7 +321,7 @@ data class LyricsTimestampData(
         ),
         LyricsTimestampData(
           208993,
-          "'Cause we know how to make the key"
+          "Cause we know how to make the key"
         ),
         LyricsTimestampData(
           211128,
@@ -347,7 +347,7 @@ data class LyricsTimestampData(
         ),
         LyricsTimestampData(
           223341,
-          "'Cause if you do"
+          "Cause if you do"
         ),
         LyricsTimestampData(
           224709,

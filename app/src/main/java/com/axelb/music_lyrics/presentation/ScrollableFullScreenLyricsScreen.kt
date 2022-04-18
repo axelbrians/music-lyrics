@@ -6,24 +6,18 @@ import android.widget.SeekBar
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.collectIsDraggedAsState
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import com.axelb.music_lyrics.R
-import com.axelb.music_lyrics.core.linearGradientBackground
 import com.axelb.music_lyrics.presentation.model.LyricsTimestampData
-import com.axelb.music_lyrics.ui.theme.MyColor
 import com.google.android.exoplayer2.ExoPlayer
 import kotlinx.coroutines.delay
 import timber.log.Timber
@@ -42,14 +36,14 @@ fun ScrollableFullScreenLyricsScreen(
 	val scrollableLyricsOffset = remember { mutableStateOf(0)}
 	val currentPlayingLyricsIndex = remember { mutableStateOf(0) }
 	val lazyListState = rememberLazyListState()
+	val isLyricsScrolling = lazyListState.interactionSource.collectIsDraggedAsState()
+	val isLyricsPressed = lazyListState.interactionSource.collectIsPressedAsState()
 
 	val animatedFloat = animateFloatAsState(
 		targetValue = if ((lazyListState.firstVisibleItemIndex == 0 &&
 				lazyListState.firstVisibleItemScrollOffset == 0)) 0f else 1f,
 		animationSpec = tween(durationMillis = 300, easing = LinearEasing)
 	)
-
-	Timber.d("animatedFloat: ${animatedFloat.value}")
 
 
 	val onSeekbarChangeListener = object : SeekBar.OnSeekBarChangeListener {
@@ -58,17 +52,23 @@ fun ScrollableFullScreenLyricsScreen(
 			progress: Int,
 			fromUser: Boolean
 		) {
+			Timber.d("onProgressChanged: $progress")
 			if (fromUser) {
-				exoPlayer.seekTo(progress.toLong() * 1_000)
+				playerElapsedText.value = longMillisToTime(progress.toLong() * 1_000)
 			}
 		}
 
 		override fun onStartTrackingTouch(seekBar: SeekBar?) {
+			Timber.d("onStartTrackingTouch")
 			shouldUpdateProgress.value = false
 		}
 
 		override fun onStopTrackingTouch(seekBar: SeekBar?) {
-			shouldUpdateProgress.value = true
+			Timber.d("onStopTrackingTouch")
+			seekBar?.run {
+				shouldUpdateProgress.value = true
+				exoPlayer.seekTo(progress.toLong() * 1_000)
+			}
 		}
 	}
 
@@ -91,29 +91,34 @@ fun ScrollableFullScreenLyricsScreen(
 		}
 	}
 
-	LaunchedEffect(exoPlayer) {
-		while (true) {
-			if (shouldUpdateProgress.value) {
+	LaunchedEffect(true) {
+		try {
+			while (true) {
 				playerPosition.value = exoPlayer.currentPosition
-				seekBarView.progress = (playerPosition.value / 1_000).toInt()
-			}
-			if (isPlaying.value) {
-				val nextIndex = lyricsDataSet.indexOfFirst {
-					it.timestampInMillis > playerPosition.value
+				if (shouldUpdateProgress.value) {
+					seekBarView.progress = (playerPosition.value / 1_000).toInt()
+					playerElapsedText.value = longMillisToTime(exoPlayer.currentPosition)
+					playerDurationText.value = longMillisToTime(exoPlayer.duration)
 				}
+				if (isPlaying.value) {
+					val nextIndex = lyricsDataSet.indexOfFirst {
+						it.timestampInMillis > playerPosition.value
+					}
 
-				if (nextIndex >= 0 && nextIndex != currentPlayingLyricsIndex.value) {
-					currentPlayingLyricsIndex.value = nextIndex
+					if (nextIndex >= 0 && nextIndex != currentPlayingLyricsIndex.value) {
+						currentPlayingLyricsIndex.value = nextIndex
+						if (!isLyricsPressed.value && !isLyricsScrolling.value) {
+							lazyListState.animateScrollToItem(
+								currentPlayingLyricsIndex.value,
+								scrollOffset = -scrollableLyricsOffset.value
+							)
+						}
+					}
 				}
-
-				lazyListState.animateScrollToItem(
-					currentPlayingLyricsIndex.value,
-					scrollOffset = -scrollableLyricsOffset.value
-				)
+				delay(200)
 			}
-			playerElapsedText.value = longMillisToTime(exoPlayer.currentPosition)
-			playerDurationText.value = longMillisToTime(exoPlayer.duration)
-			delay(200)
+		} catch (e: Exception) {
+			Timber.d("ProgressLoop: ${e.message}")
 		}
 	}
 
@@ -144,6 +149,7 @@ fun ScrollableFullScreenLyricsScreen(
 		PlaybackControlFullScreenLyricsComp(
 			modifier = Modifier.fillMaxWidth(),
 			seekBarView = seekBarView,
+			isPlaying = isPlaying.value,
 			playerElapsedText = playerElapsedText.value,
 			playerDurationText = playerDurationText.value,
 			onClick = {
